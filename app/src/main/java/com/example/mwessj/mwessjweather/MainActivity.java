@@ -1,6 +1,7 @@
 package com.example.mwessj.mwessjweather;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
 
     private ImageView UpdateBtn;
+    private ImageView CitySelect;
+
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temparatureTv, climateTv, windTv, city_name_Tv;
     private ImageView weatherImg, pmImg;
 
@@ -62,6 +65,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Log.d("myWeather", "网络挂了");
             Toast.makeText(MainActivity.this,"网络挂了！", Toast.LENGTH_LONG).show();
         }
+
+        CitySelect = (ImageView) findViewById(R.id.title_city_manager);
+        CitySelect.setOnClickListener(this);
 
         initView();
     }
@@ -242,6 +248,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.title_city_manager){
+            Intent i = new Intent(this, SelectCity.class);
+            startActivityForResult(i,1);
+        }
         if (view.getId() == R.id.title_update_btn){
 
             SharedPreferences sharedPreferences = getSharedPreferences("config",MODE_PRIVATE);
@@ -253,6 +263,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }else {
                 Log.d("myWeather","网络未连接");
                 Toast.makeText(MainActivity.this,"网络未连接！",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK){
+            String newCityCode = data.getStringExtra("cityCode");
+            Log.d("myWeather", "select city code is: "+newCityCode);
+
+            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE){
+                Log.d("myWeather", "Network is OK!");
+                queryWeatherCode(newCityCode);
+            }else{
+                Log.d("myWeather", "Network is over!");
+                Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
     }
