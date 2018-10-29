@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.mwessj.bean.City;
 import com.example.mwessj.mwessjweather.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Myadapter extends BaseAdapter {
@@ -18,6 +19,11 @@ public class Myadapter extends BaseAdapter {
     public Myadapter(Context context, List<City> datas){
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
+    }
+
+    public void  updateListView(List<City> datas){
+        mDatas = datas;
+        notifyDataSetChanged();
     }
 
     @Override
