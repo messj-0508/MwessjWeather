@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,12 +23,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
     private ImageView UpdateBtn;
+    private ProgressBar UpdateBar;
     private ImageView CitySelect;
 
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temparatureTv, climateTv, windTv, city_name_Tv;
@@ -51,6 +55,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.weather_info);
 
         UpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
+        UpdateBar = (ProgressBar) findViewById(R.id.title_progress_bar) ;
+        mySetVisibility(UpdateBtn, UpdateBar);
         UpdateBtn.setOnClickListener(this);
 
         if (NetUtil.getNetworkState(this) == NetUtil.NETWORN_WIFI) {
@@ -259,7 +265,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Log.d("myWeather",cityCode);
 
             if (NetUtil.getNetworkState(this)!=NetUtil.NETWORN_NONE){
+                mySetVisibility(UpdateBtn, UpdateBar, -1);
                 queryWeatherCode(cityCode);
+                mySetVisibility(UpdateBtn, UpdateBar);
             }else {
                 Log.d("myWeather","网络未连接");
                 Toast.makeText(MainActivity.this,"网络未连接！",Toast.LENGTH_LONG).show();
@@ -280,6 +288,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Log.d("myWeather", "Network is over!");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+    public void mySetVisibility(ImageView img, ProgressBar bar){
+        mySetVisibility(img, bar, 1);
+    }
+    public void mySetVisibility(ImageView img, ProgressBar bar, int mode){
+        if (mode == 1){
+            img.setVisibility(View.VISIBLE);
+            bar.setVisibility(View.INVISIBLE);
+        }else{
+            img.setVisibility(View.GONE);
+            bar.setVisibility(View.VISIBLE);
         }
     }
 }

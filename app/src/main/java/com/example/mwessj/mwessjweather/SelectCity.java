@@ -20,12 +20,15 @@ import android.widget.TextView;
 import com.example.mwessj.app.MyApplication;
 import com.example.mwessj.bean.City;
 import com.example.mwessj.mlayout.ClearEditText;
+import com.example.mwessj.mlayout.LettersView;
 import com.example.mwessj.mlayout.Myadapter;
+import com.example.mwessj.util.SortUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class SelectCity extends Activity implements View.OnClickListener{
+public class SelectCity extends Activity implements LettersView.OnLettersListViewListener, View.OnClickListener{
 
     private ImageView BackBtn;
     private ClearEditText mClearEditText;
@@ -34,6 +37,8 @@ public class SelectCity extends Activity implements View.OnClickListener{
     private ArrayList<City> filterDataList;
 
     private Myadapter myadapter;
+
+    private LettersView mLettersView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +56,11 @@ public class SelectCity extends Activity implements View.OnClickListener{
         mClearEditText = (ClearEditText) findViewById(R.id.search_city);
 
         mList = (ListView) findViewById(R.id.title_list);
+        mLettersView = (LettersView) findViewById(R.id.title_letters_view);
+        mLettersView.setOnLettersListViewListener(this);
         MyApplication myApplication = (MyApplication) getApplication();
         cityList = myApplication.getmCityList();
+        Collections.sort(cityList, new SortUtil());
         filterDataList = new ArrayList<City>(cityList);
         myadapter = new Myadapter(SelectCity.this, cityList);
         mList.setAdapter(myadapter);
@@ -114,5 +122,18 @@ public class SelectCity extends Activity implements View.OnClickListener{
             default:
                 break;
         }
+    }
+
+    /**
+     * ListView与字母导航联动
+     *
+     * @param s
+     */
+    @Override
+    public void onLettersListener(String s) {
+        //对应的位置
+        int position = myadapter.getPositionForNmae(s.charAt(0));
+        //移动
+        mList.setSelection(position);
     }
 }
